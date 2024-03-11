@@ -182,10 +182,21 @@ optional = false
 python-versions = ">=3.7.0"
 
 [[package]]
+name = "click"
+version = "8.1.7"
+description = "Composable command line interface toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 
@@ -735,6 +746,20 @@ test-external = ["autopep8", "black", "flake8", "gitpython", "isort", "jupyter-f
 test-functional = ["jupytext"]
 test-integration = ["ipykernel", "jupyter-server (!=2.11)", "jupytext", "nbconvert"]
 test-ui = ["calysto-bash"]
+
+[[package]]
+name = "lxml"
+version = "5.1.0"
+description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+cssselect = ["cssselect (>=0.7)"]
+html5 = ["html5lib"]
+htmlsoup = ["beautifulsoup4"]
+source = ["Cython (>=3.0.7)"]
 
 [[package]]
 name = "markdown-it-py"
@@ -1432,7 +1457,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "6c880440aed090892aa3904f7f83c53cf9c78fc984eef5344f15961c10836a99"
+content-hash = "8a86ab5d64f389e98a4463d957d557388c697ae80ec82d96792c25005562cf5b"
 
 [metadata.files]
 anyio = []
@@ -1449,6 +1474,7 @@ bleach = []
 certifi = []
 cffi = []
 charset-normalizer = []
+click = []
 colorama = []
 comm = []
 debugpy = []
@@ -1484,6 +1510,7 @@ jupyterlab-pygments = []
 jupyterlab-server = []
 jupyterlab-widgets = []
 jupytext = []
+lxml = []
 markdown-it-py = []
 markupsafe = []
 matplotlib-inline = []

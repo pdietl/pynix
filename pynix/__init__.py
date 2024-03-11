@@ -4,9 +4,10 @@ import hashlib
 from pathlib import Path
 import stat
 import sys
-import os
 from collections.abc import Callable
 import functools
+import click
+from base64 import b64encode
 
 
 def hash_md5(c: bytes) -> bytes:
@@ -29,7 +30,6 @@ def printHash32(c: bytes) -> str:
     digits32 = '0123456789abcdfghijklmnpqrsvwxyz'
 
     n = len(c) * 8 // 5
-    print(n)
 
     x = int.from_bytes(c, 'little')
     s = ''
@@ -107,12 +107,60 @@ def nar_pad(s: bytes) -> bytes:
     return s + (b'\x00' * ((8 - (len(s) & 7)) & 7))
 
 
-if len(sys.argv) != 2:
-    print(f'Usage: {sys.argv[0]} <file|symlink|directory>', file=sys.stderr)
-    sys.exit(1)
-else:
-    target_path = Path(sys.argv[1])
-    out_path = Path(target_path.name + '_serialization.nar')
-    with open(out_path, 'wb') as fp:
-        fp.write(nar_serialize(target_path))
-    print(f'Wrote {out_path} with the NAR serialization of {target_path}')
+@click.group()
+def cli() -> None:
+    '''A Python implementation of some `nix` commands'''
+    pass
+
+
+@cli.group()
+def hash() -> None:
+    '''compute and convert cryptographic hashes'''
+    pass
+
+
+@hash.command()
+@click.option('--base16', is_flag=True)
+@click.option('--base32', is_flag=True)
+@click.argument('paths', type=click.File('rb'), nargs=-1)
+def file(paths, base16: bool, base32: bool) -> None:
+    '''print cryptographic hash of a regular file'''
+    h = hash_sha256(paths[0].read())
+    if base16:
+        click.echo(printHash16(h))
+    elif base32:
+        click.echo(printHash32(h))
+    else:
+        click.echo((b'SHA256-' + b64encode(h)).decode())
+
+
+@cli.group()
+def nar():
+    '''create or inspect NAR files'''
+    pass
+
+
+@nar.command()
+@click.argument('path')
+def pack(path):
+    '''serialize a path to stdout in NAR format'''
+    target_path = Path(path)
+    if not target_path.exists:
+        click.echo(f'Path {target_path} does not exist!', err=True)
+        sys.exit(1)
+
+    sys.stdout.buffer.write(nar_serialize(target_path))
+
+
+if __name__ == '__main__':
+    cli()
+
+# if len(sys.argv) != 2:
+#     print(f'Usage: {sys.argv[0]} <file|symlink|directory>', file=sys.stderr)
+#     sys.exit(1)
+# else:
+#     target_path = Path(sys.argv[1])
+#     out_path = Path(target_path.name + '_serialization.nar')
+#     with open(out_path, 'wb') as fp:
+#         fp.write(nar_serialize(target_path))
+#     print(f'Wrote {out_path} with the NAR serialization of {target_path}')
